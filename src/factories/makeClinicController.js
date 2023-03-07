@@ -1,8 +1,10 @@
 const { ClinicController } = require("../controllers/clinicController");
+const { ClinicRepository } = require("../repositories/clinicRepository");
 const { ClinicService } = require("../services/clinicService");
 
 const makeClinicController = () => {
-  const service = new ClinicService();
+  const repository = new ClinicRepository();
+  const service = new ClinicService(repository);
   return new ClinicController(service);
 };
 
