@@ -5,38 +5,37 @@ const path = require("path");
 class ClinicRepository {
   async getVet(filters) {
     const filePath = path.join(__dirname, "..", "data", "vet-clinics.json");
-    const results = [];
-
-    const stream = fs.createReadStream(filePath).pipe(JSONStream.parse("*"));
-
-    stream.on("data", (clinic) => {
-      if (
-        (!filters.clinicName ||
-          clinic.clinicName
-            .toLowerCase()
-            .includes(filters.clinicName.toLowerCase())) &&
-        (!filters.state ||
-          clinic.stateCode.toLowerCase() === filters.state.toLowerCase()) &&
-        (!filters.from || clinic.opening.from === filters.from) &&
-        (!filters.to || clinic.opening.to === filters.to)
-      ) {
-        results.push(clinic);
-      }
-    });
-
-    return new Promise((resolve, reject) => {
-      stream.on("end", () => {
-        console.log("Finished vet searching");
-        resolve(results);
-      });
-      stream.on("error", reject);
-    });
+    const comparationFields = {
+      name: "clinicName",
+      state: "stateCode",
+      availability: "opening",
+    };
+    const results = await this.searchClinics(
+      filePath,
+      filters,
+      comparationFields
+    );
+    console.log("Finished vet searching");
+    return results;
   }
-
-  //filtes
 
   async getDental(filters) {
     const filePath = path.join(__dirname, "..", "data", "dental-clinics.json");
+    const comparationFields = {
+      name: "name",
+      state: "stateName",
+      availability: "availability",
+    };
+    const results = await this.searchClinics(
+      filePath,
+      filters,
+      comparationFields
+    );
+    console.log("Finished dental searching");
+    return results;
+  }
+
+  searchClinics = async (filePath, filters, comparisonFieldObject) => {
     const results = [];
 
     const stream = fs.createReadStream(filePath).pipe(JSONStream.parse("*"));
@@ -44,13 +43,16 @@ class ClinicRepository {
     stream.on("data", (clinic) => {
       if (
         (!filters.clinicName ||
-          clinic.name
+          clinic[comparisonFieldObject.name]
             .toLowerCase()
             .includes(filters.clinicName.toLowerCase())) &&
         (!filters.state ||
-          clinic.stateName.toLowerCase() === filters.state.toLowerCase()) &&
-        (!filters.from || clinic.availability.from >= filters.from) &&
-        (!filters.to || clinic.availability.to <= filters.to)
+          clinic[comparisonFieldObject.state].toLowerCase() ===
+            filters.state.toLowerCase()) &&
+        (!filters.from ||
+          clinic[comparisonFieldObject.availability].from === filters.from) &&
+        (!filters.to ||
+          clinic[comparisonFieldObject.availability].to === filters.to)
       ) {
         results.push(clinic);
       }
@@ -58,12 +60,12 @@ class ClinicRepository {
 
     return new Promise((resolve, reject) => {
       stream.on("end", () => {
-        console.log("Finished vet searching");
+        console.log("Finished searching");
         resolve(results);
       });
       stream.on("error", reject);
     });
-  }
+  };
 }
 
 module.exports = {
