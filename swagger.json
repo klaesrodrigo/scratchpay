@@ -5,9 +5,16 @@
     "version": "1.0.0",
     "description": "API to find dental and vet clinics"
   },
+  "tags": [
+    {
+      "name": "Clinics",
+      "description": "Clinic-related operations"
+    }
+  ],
   "paths": {
     "/clinics": {
       "get": {
+        "tags": ["Clinics"],
         "summary": "List all clinics",
         "description": "Return a list of vet and dental clinics",
         "parameters": [
@@ -71,6 +78,140 @@
           }
         }
       }
+    },
+    "/clinics/vet": {
+      "get": {
+        "tags": ["Clinics"],
+        "summary": "List all clinics",
+        "description": "Return a list of vet and dental clinics",
+        "parameters": [
+          {
+            "name": "clinicName",
+            "in": "path",
+            "required": false,
+            "description": "The clinic name",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "path",
+            "required": false,
+            "description": "The state where the clinic is located",
+            "schema": {
+              "type": "string",
+              "examples": {
+                "example1": {
+                  "value": "CA"
+                },
+                "example2": {
+                  "value": "New York"
+                }
+              }
+            }
+          },
+          {
+            "name": "availability",
+            "in": "path",
+            "required": false,
+            "description": "The availability of clinic hours",
+            "schema": {
+              "type": "string",
+              "examples": {
+                "example1": {
+                  "value": "from:09:00, to:22:00"
+                },
+                "example2": {
+                  "value": "from:08:00"
+                },
+                "example3": {
+                  "value": "to:21:00"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of clincs returned with success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClinicResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clinics/dental": {
+      "get": {
+        "tags": ["Clinics"],
+        "summary": "List all clinics",
+        "description": "Return a list of vet and dental clinics",
+        "parameters": [
+          {
+            "name": "clinicName",
+            "in": "path",
+            "required": false,
+            "description": "The clinic name",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "path",
+            "required": false,
+            "description": "The state where the clinic is located",
+            "schema": {
+              "type": "string",
+              "examples": {
+                "example1": {
+                  "value": "CA"
+                },
+                "example2": {
+                  "value": "New York"
+                }
+              }
+            }
+          },
+          {
+            "name": "availability",
+            "in": "path",
+            "required": false,
+            "description": "The availability of clinic hours",
+            "schema": {
+              "type": "string",
+              "examples": {
+                "example1": {
+                  "value": "from:09:00, to:22:00"
+                },
+                "example2": {
+                  "value": "from:08:00"
+                },
+                "example3": {
+                  "value": "to:21:00"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of clincs returned with success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClinicResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -81,18 +222,18 @@
           "dental clinics": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Clinics"
+              "$ref": "#/components/schemas/ClinicResponse"
             }
           },
           "Vet clinics": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Clinics"
+              "$ref": "#/components/schemas/ClinicResponse"
             }
           }
         }
       },
-      "Clinics": {
+      "ClinicResponse": {
         "type": "object",
         "properties": {
           "clinicName": {
